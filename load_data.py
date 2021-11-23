@@ -5,7 +5,7 @@ def read_data(data_path):
     data = pd.read_csv(data_path)
     print('Original column list ->',data.columns)
     #call simple data transform step
-    data.rename(columns = {col:col.lower() for col in data.columns})
+    data.rename(columns = {col:col.lower() for col in data.columns},inplace = True)
     print('Transformed column list ->',data.columns)
 
     return None
