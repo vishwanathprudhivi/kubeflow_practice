@@ -14,7 +14,7 @@ ENTRYPOINT [ "python3","/legacy_code_repo/display_stats.py" ]
 #create image syntax
 #docker build -t display_stats -f Dockerfile_2 .
 #docker run syntax
-#docker run -v /Users/vishwanathprudhivi/Desktop/Code/amex_analytics_vidhya/analytics_vidhya_amex_hackathon:/analytics_vidhya_amex_hackathon display_stats --data_path=/analytics_vidhya_amex_hackathon/data/train_go05W65.csv
+#docker run -v /local_dir:/mount_dir display_stats --data_path=/mount_dir/data/train_go05W65.csv
 #link local docker image to revised image name as per GCP specifications
 #docker tag display_stats us-docker.pkg.dev/steady-cat-331605/gcr.io/display_stats
 #authorization command to be able to push to AR
