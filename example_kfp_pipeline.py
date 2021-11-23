@@ -1,27 +1,30 @@
-from kfp.v2 import compiler
-from kfp.v2 import dsl
-from kfp.v2.dsl import Input, InputPath, Output, OutputPath, Dataset, Model, component
+from kfp.dsl import pipeline,ContainerOp,PipelineParam
+from kfp.compiler import Compiler
 
-
-@component
-def load_data(
-
+# defining pipeline meta
+@pipeline(
+    name='Basic Pipeline',
+    description='This pipeline does basic ETL and Stats gen'
 )
 
-@component
-def transform_and_save()
+# stitch the steps
+def sample_pipeline():
+    step_1 = ContainerOp(
+        name = 'read_data_transform', # name of the operation
+        image = 'gcr.io/steady-cat-331605/load_data:1.0', #docker location in registry
+        arguments = ['--data_path=gs://kfp_examples_dataset_storage'], # passing context as argument
+        file_outputs = {
+            'data_path': 'gs://kfp_examples_dataset_storage' #name of the file with result 
+        }
+    )
+    step_2 = ContainerOp(   
+        name = 'read_data_display_stats', # name of operation   
+        image = 'gcr.io/steady-cat-331605/display_stats:1.0', #docker location in registry
+        arguments = ['--data_path=gs://kfp_examples_dataset_storage'], # passing step_1.output as argument
+        file_outputs = {
+            'data_path': '--data_path=gs://kfp_examples_dataset_storage' #name of the file with result
+        }
+   )
 
-# The main pipleine responsible for orchestrating individual steps
-@dsl.pipeline(pipeline_root='', name='example_kfp_pipeline')
-def pipeline():
-    # Read data set from GCS
-    load_data()
-    # Apply data transformations
-    transform_and_save()
-    # Save the data to GCS
-    
-
-
-if __name__ == '__main__':
-    compiler.Compiler().compile(
-        pipeline_func=pipeline, package_path=__file__.replace('.py', '.yaml'))
+if __name__=='__main__':
+    Compiler().compile(sample_pipeline, 'pipeline.zip')

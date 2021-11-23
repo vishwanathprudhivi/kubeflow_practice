@@ -1,8 +1,20 @@
 import pandas as pd
 import argparse
+from google.cloud import storage
+import os
+import io
+
+def gcp_csv_to_df(bucket_name, source_file_name):
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(source_file_name)
+    data = blob.download_as_string()
+    df = pd.read_csv(io.BytesIO(data))
+    print(f'Pulled down file from bucket {bucket_name}, file name: {source_file_name}')
+    return df
 
 def read_data(data_path):
-    data = pd.read_csv(data_path)
+    data = gcp_csv_to_df(data_path,'train.csv')
     print('Original column list ->',data.columns)
     #call simple data transform step
     data.rename(columns = {col:col.lower() for col in data.columns},inplace = True)
